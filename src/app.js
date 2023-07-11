@@ -113,7 +113,7 @@ app.post("/login", async (req, res) => {
         const token = uuid()
         await db.collection("sessao").insertOne({ token, idUsuario: userExists._id })
 
-        res.status(200).send(token)
+        res.status(200).send({ token, nome: userExists.nome })
 
     } catch (err) { res.status(500).send(err.message) }
 
@@ -169,9 +169,9 @@ app.get("/extrato", async (req, res) => {
 
         const user = await db.collection("users").findOne({ _id: new ObjectId(sessao.idUsuario) })
 
-        const operacoes = await db.collection("operacoes").find({ user: user.email }).toArray()
+        const operacoes = (await db.collection("operacoes").find({ user: user.email }).toArray())
 
-        res.status(200).send(operacoes)
+        res.status(200).send({operacoes, nome: user.nome, id: user._id})
 
     } catch (err) { res.status(500).send(err.message) }
 })
